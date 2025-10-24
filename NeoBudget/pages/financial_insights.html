@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Insights - NeoBudget</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00FFFF;
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+            box-shadow: 0 0 6px #00FFFF;
+        }
+        
+        .particle:nth-child(2) {
+            background: #FF0080;
+            box-shadow: 0 0 6px #FF0080;
+            animation-delay: -2s;
+            animation-duration: 10s;
+        }
+        
+        .particle:nth-child(3) {
+            background: #39FF14;
+            box-shadow: 0 0 6px #39FF14;
+            animation-delay: -4s;
+            animation-duration: 12s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .chart-container {
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.8);
+        }
+        
+        .insight-card {
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+            }
+            to {
+                box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+            }
+        }
+        
+        .heatmap-cell {
+            transition: all 0.3s ease;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .trend-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-line 2s ease-in-out forwards;
+        }
+        
+        @keyframes draw-line {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .achievement-badge {
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+    </style>
+  
+  <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fneobudget6090back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.9"></script>
+  <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="bg-background min-h-screen relative overflow-x-hidden">
+    <!-- Floating Particles Background -->
+    <div class="floating-particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-20 bg-surface/80 backdrop-blur-md border-b border-primary/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-surface border border-primary/30 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-orbitron font-bold text-primary text-shadow-glow-primary">NeoBudget</h1>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Dashboard</a>
+                    <a href="add_expense.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Add Expense</a>
+                    <a href="budget_planner.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Budget Planner</a>
+                    <a href="financial_insights.html" class="text-primary font-medium">Financial Insights</a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-lg bg-surface hover:bg-surface-light transition-colors duration-300">
+                        <svg class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 01-15 0V7a7.5 7.5 0 0115 0v10z"/>
+                        </svg>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-orbitron font-bold text-white text-shadow-glow-primary mb-2">Financial Insights</h1>
+            <p class="text-text-secondary">AI-powered analysis and personalized recommendations</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="chart-container rounded-xl border border-primary/20 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-orbitron font-bold text-white">Savings Rate</h3>
+                    <svg class="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 14l5-5 5 5z"/>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-accent mb-2">23.5%</div>
+                <div class="text-sm text-text-secondary">+2.3% from last month</div>
+            </div>
+
+            <div class="chart-container rounded-xl border border-secondary/20 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-orbitron font-bold text-white">Spending Trend</h3>
+                    <svg class="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-secondary mb-2">$2,847</div>
+                <div class="text-sm text-text-secondary">-5.2% from last month</div>
+            </div>
+
+            <div class="chart-container rounded-xl border border-primary/20 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-orbitron font-bold text-white">Budget Health</h3>
+                    <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-primary mb-2">Excellent</div>
+                <div class="text-sm text-text-secondary">87% on track</div>
+            </div>
+
+            <div class="chart-container rounded-xl border border-warning/20 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-orbitron font-bold text-white">Investment Score</h3>
+                    <svg class="w-6 h-6 text-warning" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-warning mb-2">B+</div>
+                <div class="text-sm text-text-secondary">Room for improvement</div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Charts -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Spending Trend Analysis -->
+                <div class="chart-container rounded-xl border border-primary/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Spending Trend Analysis</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 text-sm bg-primary/20 text-primary rounded-lg">6M</button>
+                            <button class="px-3 py-1 text-sm text-text-secondary hover:text-primary transition-colors">1Y</button>
+                            <button class="px-3 py-1 text-sm text-text-secondary hover:text-primary transition-colors">All</button>
+                        </div>
+                    </div>
+                    
+                    <!-- SVG Chart -->
+                    <div class="h-64 relative">
+                        <svg class="w-full h-full" viewBox="0 0 600 200">
+                            <!-- Grid Lines -->
+                            <defs>
+                                <pattern id="grid" width="50" height="40" patternUnits="userSpaceOnUse">
+                                    <path d="M 50 0 L 0 0 0 40" fill="none" stroke="#2A2A2A" stroke-width="1"/>
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grid)" />
+                            
+                            <!-- Income Line -->
+                            <polyline class="trend-line" fill="none" stroke="#00FFFF" stroke-width="3" 
+                                points="50,150 100,140 150,145 200,135 250,130 300,125 350,120 400,115 450,110 500,105 550,100"/>
+                            
+                            <!-- Expense Line -->
+                            <polyline class="trend-line" fill="none" stroke="#FF0080" stroke-width="3" 
+                                points="50,170 100,165 150,160 200,155 250,150 300,145 350,140 400,135 450,130 500,125 550,120" 
+                                style="animation-delay: 0.5s;"/>
+                            
+                            <!-- Data Points -->
+                            <circle cx="550" cy="100" r="4" fill="#00FFFF" class="pulse-glow"/>
+                            <circle cx="550" cy="120" r="4" fill="#FF0080" class="pulse-glow"/>
+                        </svg>
+                        
+                        <!-- Legend -->
+                        <div class="absolute bottom-4 left-4 flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                <span class="text-sm text-text-secondary">Income</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                                <span class="text-sm text-text-secondary">Expenses</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Spending Patterns -->
+                <div class="chart-container rounded-xl border border-secondary/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Category Spending Patterns</h3>
+                        <button class="text-text-secondary hover:text-primary transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Bar Chart -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M7 18c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2s2 .9 2 2v8c0 1.1-.9 2-2 2zM12 18c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2s2 .9 2 2v10c0 1.1-.9 2-2 2zM17 18c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2s2 .9 2 2v4c0 1.1-.9 2-2 2z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-white font-medium">Food & Dining</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-32 bg-surface-light rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 75%;"></div>
+                                </div>
+                                <span class="text-primary font-bold">$847</span>
+                                <span class="text-accent text-sm">+12%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v12z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-white font-medium">Shopping</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-32 bg-surface-light rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 60%;"></div>
+                                </div>
+                                <span class="text-secondary font-bold">$623</span>
+                                <span class="text-error text-sm">-8%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-white font-medium">Transportation</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-32 bg-surface-light rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 45%;"></div>
+                                </div>
+                                <span class="text-accent font-bold">$456</span>
+                                <span class="text-accent text-sm">+3%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-white font-medium">Entertainment</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="w-32 bg-surface-light rounded-full h-2">
+                                    <div class="bg-warning h-2 rounded-full" style="width: 30%;"></div>
+                                </div>
+                                <span class="text-warning font-bold">$289</span>
+                                <span class="text-error text-sm">-15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spending Heatmap -->
+                <div class="chart-container rounded-xl border border-accent/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Spending Heatmap</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-text-secondary">Low</span>
+                            <div class="flex space-x-1">
+                                <div class="w-3 h-3 bg-surface-light rounded"></div>
+                                <div class="w-3 h-3 bg-primary/30 rounded"></div>
+                                <div class="w-3 h-3 bg-primary/60 rounded"></div>
+                                <div class="w-3 h-3 bg-primary rounded"></div>
+                            </div>
+                            <span class="text-sm text-text-secondary">High</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Heatmap Grid -->
+                    <div class="grid grid-cols-7 gap-1">
+                        <!-- Days of Week Header -->
+                        <div class="text-xs text-text-muted text-center py-2">Sun</div>
+                        <div class="text-xs text-text-muted text-center py-2">Mon</div>
+                        <div class="text-xs text-text-muted text-center py-2">Tue</div>
+                        <div class="text-xs text-text-muted text-center py-2">Wed</div>
+                        <div class="text-xs text-text-muted text-center py-2">Thu</div>
+                        <div class="text-xs text-text-muted text-center py-2">Fri</div>
+                        <div class="text-xs text-text-muted text-center py-2">Sat</div>
+                        
+                        <!-- Heatmap Cells -->
+                        <div class="heatmap-cell w-8 h-8 bg-surface-light rounded cursor-pointer" title="$0"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/30 rounded cursor-pointer" title="$45"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/60 rounded cursor-pointer" title="$89"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/30 rounded cursor-pointer" title="$67"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary rounded cursor-pointer" title="$156"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/60 rounded cursor-pointer" title="$123"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/30 rounded cursor-pointer" title="$78"></div>
+                        
+                        <div class="heatmap-cell w-8 h-8 bg-surface-light rounded cursor-pointer" title="$12"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/60 rounded cursor-pointer" title="$98"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/30 rounded cursor-pointer" title="$54"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary rounded cursor-pointer" title="$187"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/60 rounded cursor-pointer" title="$134"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/30 rounded cursor-pointer" title="$76"></div>
+                        <div class="heatmap-cell w-8 h-8 bg-primary/60 rounded cursor-pointer" title="$112"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Insights & Tips -->
+            <div class="space-y-8">
+                <!-- AI Insights -->
+                <div class="chart-container rounded-xl border border-primary/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">AI Insights</h3>
+                        <div class="w-2 h-2 bg-accent rounded-full pulse-glow"></div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="insight-card rounded-lg border border-accent/20 p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-white mb-1">Optimize Food Spending</h4>
+                                    <p class="text-sm text-text-secondary">You're spending 15% more on dining out. Consider meal prep to save $200/month.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card rounded-lg border border-secondary/20 p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M7 14l5-5 5 5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-white mb-1">Investment Opportunity</h4>
+                                    <p class="text-sm text-text-secondary">Your savings rate is excellent. Consider investing $500 in index funds.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card rounded-lg border border-primary/20 p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-white mb-1">Budget Alert</h4>
+                                    <p class="text-sm text-text-secondary">You're 80% through your entertainment budget with 10 days left this month.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievement Tracker -->
+                <div class="chart-container rounded-xl border border-accent/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Achievements</h3>
+                        <span class="text-sm text-accent">3/5 Complete</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="achievement-badge w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-white">Savings Streak</h4>
+                                <p class="text-sm text-text-secondary">30 days of meeting savings goals</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3">
+                            <div class="achievement-badge w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-white">Budget Master</h4>
+                                <p class="text-sm text-text-secondary">Stayed under budget for 3 months</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-surface-light flex items-center justify-center">
+                                <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-text-muted">Investment Pro</h4>
+                                <p class="text-sm text-text-secondary">Make your first investment</p>
+                                <div class="w-full bg-surface-light rounded-full h-1 mt-2">
+                                    <div class="bg-secondary h-1 rounded-full" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Library -->
+                <div class="chart-container rounded-xl border border-secondary/20 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Tips & Tricks</h3>
+                        <button class="text-text-secondary hover:text-primary transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="insight-card rounded-lg border border-primary/20 p-4 cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://images.unsplash.com/photo-1652422485192-d959b9a8d16e" alt="Budgeting tips illustration" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;">
+                                <div>
+                                    <h4 class="font-medium text-white">50/30/20 Rule</h4>
+                                    <p class="text-sm text-text-secondary">Essential budgeting strategy</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card rounded-lg border border-accent/20 p-4 cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://images.unsplash.com/photo-1651129521731-6f6ea5ea0caa" alt="Investment strategies illustration" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;">
+                                <div>
+                                    <h4 class="font-medium text-white">Dollar-Cost Averaging</h4>
+                                    <p class="text-sm text-text-secondary">Smart investment approach</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card rounded-lg border border-secondary/20 p-4 cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <img src="https://images.unsplash.com/photo-1603810263135-dba2095469a4" alt="Debt management strategies illustration" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.onerror=null;">
+                                <div>
+                                    <h4 class="font-medium text-white">Debt Snowball</h4>
+                                    <p class="text-sm text-text-secondary">Effective debt elimination</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export & Share -->
+                <div class="chart-container rounded-xl border border-warning/20 p-6">
+                    <h3 class="text-lg font-orbitron font-bold text-white mb-4">Export & Share</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="flex items-center justify-center space-x-2 px-4 py-3 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg transition-all duration-300 hover:shadow-glow-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="text-sm">PDF</span>
+                        </button>
+                        
+                        <button class="flex items-center justify-center space-x-2 px-4 py-3 bg-accent/20 hover:bg-accent/30 text-accent rounded-lg transition-all duration-300 hover:shadow-glow-accent">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-sm">Image</span>
+                        </button>
+                        
+                        <button class="flex items-center justify-center space-x-2 px-4 py-3 bg-secondary/20 hover:bg-secondary/30 text-secondary rounded-lg transition-all duration-300 hover:shadow-glow-secondary">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                            <span class="text-sm">Twitter</span>
+                        </button>
+                        
+                        <button class="flex items-center justify-center space-x-2 px-4 py-3 bg-info/20 hover:bg-info/30 text-info rounded-lg transition-all duration-300">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                            </svg>
+                            <span class="text-sm">LinkedIn</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-md border-t border-primary/20 z-20">
+        <div class="flex items-center justify-around py-2">
+            <a href="dashboard.html" class="flex flex-col items-center space-y-1 p-2">
+                <svg class="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-xs text-text-secondary">Dashboard</span>
+            </a>
+            <a href="add_expense.html" class="flex flex-col items-center space-y-1 p-2">
+                <svg class="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                <span class="text-xs text-text-secondary">Add</span>
+            </a>
+            <a href="budget_planner.html" class="flex flex-col items-center space-y-1 p-2">
+                <svg class="w-6 h-6 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span class="text-xs text-text-secondary">Budget</span>
+            </a>
+            <a href="financial_insights.html" class="flex flex-col items-center space-y-1 p-2">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                </svg>
+                <span class="text-xs text-primary">Insights</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Chart interactions
+        document.querySelectorAll('.heatmap-cell').forEach(cell => {
+            cell.addEventListener('mouseenter', function() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute bg-surface border border-primary/20 rounded-lg px-2 py-1 text-sm text-white z-50';
+                tooltip.textContent = this.getAttribute('title');
+                tooltip.style.left = '50%';
+                tooltip.style.top = '-40px';
+                tooltip.style.transform = 'translateX(-50%)';
+                this.style.position = 'relative';
+                this.appendChild(tooltip);
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                const tooltip = this.querySelector('div');
+                if (tooltip) {
+                    tooltip.remove();
+                }
+            });
+        });
+
+        // Insight card animations
+        document.querySelectorAll('.insight-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px)';
+                }, 100);
+            });
+        });
+
+        // Export functionality
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('PDF') || button.textContent.includes('Image')) {
+                button.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = this.innerHTML.replace(/PDF|Image/, 'Exporting...');
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                        
+                        // Show success message
+                        const message = document.createElement('div');
+                        message.className = 'fixed top-4 right-4 bg-accent/20 border border-accent/30 rounded-lg px-4 py-2 text-accent z-50';
+                        message.textContent = 'Export completed successfully!';
+                        document.body.appendChild(message);
+                        
+                        setTimeout(() => {
+                            message.remove();
+                        }, 3000);
+                    }, 2000);
+                });
+            }
+        });
+
+        // Social sharing
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('Twitter') || button.textContent.includes('LinkedIn')) {
+                button.addEventListener('click', function() {
+                    const platform = this.textContent.includes('Twitter') ? 'Twitter' : 'LinkedIn';
+                    const message = document.createElement('div');
+                    message.className = 'fixed top-4 right-4 bg-secondary/20 border border-secondary/30 rounded-lg px-4 py-2 text-secondary z-50';
+                    message.textContent = `Sharing to ${platform}...`;
+                    document.body.appendChild(message);
+                    
+                    setTimeout(() => {
+                        message.remove();
+                    }, 2000);
+                });
+            }
+        });
+
+        // Auto-refresh insights every 30 seconds
+        setInterval(() => {
+            const insightCards = document.querySelectorAll('.insight-card');
+            if (insightCards.length > 0) {
+                const randomCard = insightCards[Math.floor(Math.random() * insightCards.length)];
+                randomCard.style.animation = 'glow-pulse 1s ease-in-out';
+                setTimeout(() => {
+                    randomCard.style.animation = '';
+                }, 1000);
+            }
+        }, 30000);
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

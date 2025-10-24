@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense - NeoBudget</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00FFFF;
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+            box-shadow: 0 0 6px #00FFFF;
+        }
+        
+        .particle:nth-child(2) {
+            background: #FF0080;
+            box-shadow: 0 0 6px #FF0080;
+            animation-delay: -2s;
+            animation-duration: 10s;
+        }
+        
+        .particle:nth-child(3) {
+            background: #39FF14;
+            box-shadow: 0 0 6px #39FF14;
+            animation-delay: -4s;
+            animation-duration: 12s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .glow-input:focus {
+            box-shadow: 0 0 0 2px #00FFFF, 0 0 20px rgba(0, 255, 255, 0.3);
+            border-color: #00FFFF;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+        }
+        
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #2A2A2A;
+            border-radius: 0.75rem;
+            background: rgba(26, 26, 26, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
+            border-color: #00FFFF;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .category-item.selected {
+            border-color: #00FFFF;
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .ai-suggestion {
+            animation: slideInUp 0.5s ease-out;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 128, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropzone {
+            border: 2px dashed #2A2A2A;
+            transition: all 0.3s ease;
+        }
+        
+        .dropzone.dragover {
+            border-color: #00FFFF;
+            background: rgba(0, 255, 255, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .success-animation {
+            animation: successPulse 0.6s ease-out;
+        }
+        
+        @keyframes successPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(57, 255, 20, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(57, 255, 20, 0);
+            }
+        }
+    </style>
+  
+  <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fneobudget6090back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.9"></script>
+  <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="bg-background min-h-screen relative overflow-x-hidden">
+    <!-- Floating Particles Background -->
+    <div class="floating-particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-20 bg-surface/80 backdrop-blur-md border-b border-surface-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xl font-orbitron font-bold text-primary text-shadow-glow-primary">NeoBudget</span>
+                    </a>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Dashboard</a>
+                    <a href="add_expense.html" class="text-primary font-medium">Add Expense</a>
+                    <a href="budget_planner.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Budget Planner</a>
+                    <a href="financial_insights.html" class="text-text-secondary hover:text-primary transition-colors duration-300">Insights</a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden text-text-primary hover:text-primary transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-surface border-t border-surface-light">
+            <div class="px-4 py-2 space-y-1">
+                <a href="dashboard.html" class="block px-3 py-2 text-text-secondary hover:text-primary transition-colors">Dashboard</a>
+                <a href="add_expense.html" class="block px-3 py-2 text-primary font-medium">Add Expense</a>
+                <a href="budget_planner.html" class="block px-3 py-2 text-text-secondary hover:text-primary transition-colors">Budget Planner</a>
+                <a href="financial_insights.html" class="block px-3 py-2 text-text-secondary hover:text-primary transition-colors">Insights</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-orbitron font-bold text-primary text-shadow-glow-primary mb-2">Add New Expense</h1>
+            <p class="text-text-secondary">Track your spending with AI-powered categorization</p>
+        </div>
+
+        <!-- Add Expense Form -->
+        <div class="bg-surface/80 backdrop-blur-md rounded-2xl border border-primary/20 p-6 md:p-8 shadow-glow-primary">
+            <form id="expenseForm" class="space-y-8">
+                <!-- Amount Input -->
+                <div class="space-y-2">
+                    <label for="amount" class="block text-lg font-medium text-text-primary mb-4">Amount</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                            <span class="text-2xl text-primary font-bold">$</span>
+                        </div>
+                        <input 
+                            type="number" 
+                            id="amount" 
+                            name="amount"
+                            step="0.01"
+                            min="0"
+                            required
+                            class="glow-input w-full pl-12 pr-4 py-4 text-2xl font-bold bg-surface border border-surface-light rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-0 transition-all duration-300"
+                            placeholder="0.00"
+                        >
+                    </div>
+                    <div id="amountError" class="text-error text-sm hidden">Please enter a valid amount</div>
+                </div>
+
+                <!-- AI Suggestions -->
+                <div id="aiSuggestions" class="hidden space-y-3">
+                    <h3 class="text-sm font-medium text-accent">AI Suggestions</h3>
+                    <div class="flex flex-wrap gap-2" id="suggestionChips"></div>
+                </div>
+
+                <!-- Category Selection -->
+                <div class="space-y-4">
+                    <label class="block text-lg font-medium text-text-primary">Category</label>
+                    <div class="category-grid" id="categoryGrid">
+                        <!-- Food & Dining -->
+                        <div class="category-item" data-category="food">
+                            <div class="w-8 h-8 mb-2 text-primary">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.20-1.10-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Food</span>
+                        </div>
+
+                        <!-- Transportation -->
+                        <div class="category-item" data-category="transport">
+                            <div class="w-8 h-8 mb-2 text-secondary">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Transport</span>
+                        </div>
+
+                        <!-- Shopping -->
+                        <div class="category-item" data-category="shopping">
+                            <div class="w-8 h-8 mb-2 text-accent">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Shopping</span>
+                        </div>
+
+                        <!-- Entertainment -->
+                        <div class="category-item" data-category="entertainment">
+                            <div class="w-8 h-8 mb-2 text-warning">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Entertainment</span>
+                        </div>
+
+                        <!-- Healthcare -->
+                        <div class="category-item" data-category="healthcare">
+                            <div class="w-8 h-8 mb-2 text-error">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6h5v2h2V6h5l-1.5-1.5L16 3H8L6.5 4.5 5 6H4zm0 4v9c0 1.1.9 2 2 2h6.2c-.2-.6-.2-1.3-.2-2H6v-7h12v1.2c.7 0 1.4 0 2 .2V10H4z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Healthcare</span>
+                        </div>
+
+                        <!-- Utilities -->
+                        <div class="category-item" data-category="utilities">
+                            <div class="w-8 h-8 mb-2 text-info">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-text-secondary">Utilities</span>
+                        </div>
+
+                        <!-- Add Custom Category -->
+                        <div class="category-item border-dashed border-primary/50 hover:border-primary" id="addCategoryBtn">
+                            <div class="w-8 h-8 mb-2 text-primary">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-center text-primary">Add Category</span>
+                        </div>
+                    </div>
+                    <div id="categoryError" class="text-error text-sm hidden">Please select a category</div>
+                </div>
+
+                <!-- Merchant Name -->
+                <div class="space-y-2">
+                    <label for="merchant" class="block text-lg font-medium text-text-primary">Merchant Name</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="merchant" 
+                            name="merchant"
+                            class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-0 transition-all duration-300"
+                            placeholder="Where did you spend?"
+                        >
+                        <div id="merchantSuggestions" class="absolute top-full left-0 right-0 bg-surface border border-surface-light rounded-lg mt-1 hidden z-10 max-h-40 overflow-y-auto scrollbar-neon"></div>
+                    </div>
+                </div>
+
+                <!-- Date Picker -->
+                <div class="space-y-2">
+                    <label for="date" class="block text-lg font-medium text-text-primary">Date</label>
+                    <input 
+                        type="date" 
+                        id="date" 
+                        name="date"
+                        required
+                        class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:ring-0 transition-all duration-300"
+                    >
+                </div>
+
+                <!-- Notes -->
+                <div class="space-y-2">
+                    <label for="notes" class="block text-lg font-medium text-text-primary">Notes (Optional)</label>
+                    <textarea 
+                        id="notes" 
+                        name="notes"
+                        rows="3"
+                        maxlength="200"
+                        class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-0 transition-all duration-300 resize-none"
+                        placeholder="Add any additional details..."
+                    ></textarea>
+                    <div class="flex justify-end">
+                        <span id="charCount" class="text-xs text-accent">0/200</span>
+                    </div>
+                </div>
+
+                <!-- Receipt Upload -->
+                <div class="space-y-2">
+                    <label class="block text-lg font-medium text-text-primary">Receipt Photo (Optional)</label>
+                    <div class="dropzone rounded-lg p-8 text-center bg-surface border-2 border-dashed border-surface-light hover:border-primary/50 transition-all duration-300" id="receiptDropzone">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-12 h-12 text-text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="text-text-secondary mb-2">Drag and drop your receipt here</p>
+                            <p class="text-sm text-text-muted mb-4">or</p>
+                            <button type="button" class="px-4 py-2 bg-primary/20 border border-primary/30 rounded-lg text-primary hover:bg-primary/30 transition-colors">
+                                Choose File
+                            </button>
+                            <input type="file" id="receiptFile" accept="image/*" class="hidden">
+                        </div>
+                    </div>
+                    <div id="receiptPreview" class="hidden mt-4">
+                        <img id="receiptImage" src="" alt="Receipt preview" class="max-w-full h-32 object-cover rounded-lg border border-surface-light">
+                        <button type="button" id="removeReceipt" class="mt-2 text-error hover:text-error/80 text-sm">Remove</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button 
+                        type="submit"
+                        class="flex-1 bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-glow-secondary"
+                    >
+                        Save Expense
+                    </button>
+                    <button 
+                        type="button"
+                        id="saveAndAddAnother"
+                        class="flex-1 bg-accent/20 border border-accent/30 hover:bg-accent/30 text-accent font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-glow-accent"
+                    >
+                        Save & Add Another
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div class="bg-surface rounded-2xl border border-accent/30 p-8 text-center max-w-md mx-4 shadow-glow-accent">
+                <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-orbitron font-bold text-accent mb-2">Expense Added!</h3>
+                <p class="text-text-secondary mb-6">Your expense has been successfully recorded.</p>
+                <div class="flex gap-3">
+                    <button id="goToDashboard" class="flex-1 bg-primary/20 border border-primary/30 text-primary py-2 px-4 rounded-lg hover:bg-primary/30 transition-colors">
+                        View Dashboard
+                    </button>
+                    <button id="addAnother" class="flex-1 bg-accent/20 border border-accent/30 text-accent py-2 px-4 rounded-lg hover:bg-accent/30 transition-colors">
+                        Add Another
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Character count for notes
+        document.getElementById('notes').addEventListener('input', function() {
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = `${this.value.length}/200`;
+            
+            if (this.value.length > 180) {
+                charCount.classList.add('text-warning');
+            } else {
+                charCount.classList.remove('text-warning');
+            }
+        });
+
+        // Category selection
+        document.querySelectorAll('.category-item[data-category]').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove selected class from all items
+                document.querySelectorAll('.category-item').forEach(cat => cat.classList.remove('selected'));
+                // Add selected class to clicked item
+                this.classList.add('selected');
+                
+                // Hide category error
+                document.getElementById('categoryError').classList.add('hidden');
+                
+                // Show AI suggestions based on category
+                showAISuggestions(this.dataset.category);
+            });
+        });
+
+        // Add custom category
+        document.getElementById('addCategoryBtn').addEventListener('click', function() {
+            const categoryName = prompt('Enter category name:');
+            if (categoryName && categoryName.trim()) {
+                // Create new category item (simplified for demo)
+                alert(`Custom category "${categoryName}" would be added in a real implementation.`);
+            }
+        });
+
+        // AI Suggestions
+        function showAISuggestions(category) {
+            const suggestions = {
+                food: ['Restaurant', 'Groceries', 'Coffee Shop', 'Fast Food'],
+                transport: ['Gas Station', 'Uber', 'Public Transit', 'Parking'],
+                shopping: ['Amazon', 'Target', 'Walmart', 'Online Store'],
+                entertainment: ['Netflix', 'Movie Theater', 'Concert', 'Gaming'],
+                healthcare: ['Pharmacy', 'Doctor Visit', 'Dental', 'Insurance'],
+                utilities: ['Electric Bill', 'Water Bill', 'Internet', 'Phone']
+            };
+
+            const suggestionChips = document.getElementById('suggestionChips');
+            const aiSuggestions = document.getElementById('aiSuggestions');
+            
+            if (suggestions[category]) {
+                suggestionChips.innerHTML = '';
+                suggestions[category].forEach(suggestion => {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'ai-suggestion px-3 py-1 rounded-full text-sm border border-primary/30 text-primary hover:bg-primary/10 transition-colors';
+                    chip.textContent = suggestion;
+                    chip.addEventListener('click', () => {
+                        document.getElementById('merchant').value = suggestion;
+                    });
+                    suggestionChips.appendChild(chip);
+                });
+                aiSuggestions.classList.remove('hidden');
+            }
+        }
+
+        // Merchant autocomplete (simplified)
+        const merchantInput = document.getElementById('merchant');
+        const merchantSuggestions = document.getElementById('merchantSuggestions');
+        
+        const commonMerchants = ['Starbucks', 'McDonald\'s', 'Amazon', 'Target', 'Walmart', 'Shell', 'Exxon', 'Netflix', 'Spotify'];
+        
+        merchantInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            if (value.length > 1) {
+                const matches = commonMerchants.filter(merchant => 
+                    merchant.toLowerCase().includes(value)
+                );
+                
+                if (matches.length > 0) {
+                    merchantSuggestions.innerHTML = matches.map(merchant => 
+                        `<div class="px-4 py-2 hover:bg-surface-light cursor-pointer text-text-primary" onclick="selectMerchant('${merchant}')">${merchant}</div>`
+                    ).join('');
+                    merchantSuggestions.classList.remove('hidden');
+                } else {
+                    merchantSuggestions.classList.add('hidden');
+                }
+            } else {
+                merchantSuggestions.classList.add('hidden');
+            }
+        });
+
+        function selectMerchant(merchant) {
+            document.getElementById('merchant').value = merchant;
+            document.getElementById('merchantSuggestions').classList.add('hidden');
+        }
+
+        // Receipt upload handling
+        const receiptDropzone = document.getElementById('receiptDropzone');
+        const receiptFile = document.getElementById('receiptFile');
+        const receiptPreview = document.getElementById('receiptPreview');
+        const receiptImage = document.getElementById('receiptImage');
+
+        receiptDropzone.addEventListener('click', () => receiptFile.click());
+
+        receiptDropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            receiptDropzone.classList.add('dragover');
+        });
+
+        receiptDropzone.addEventListener('dragleave', () => {
+            receiptDropzone.classList.remove('dragover');
+        });
+
+        receiptDropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            receiptDropzone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        receiptFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    receiptImage.src = e.target.result;
+                    receiptPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('removeReceipt').addEventListener('click', () => {
+            receiptPreview.classList.add('hidden');
+            receiptFile.value = '';
+        });
+
+        // Form validation and submission
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = true;
+            
+            // Validate amount
+            const amount = document.getElementById('amount').value;
+            if (!amount || parseFloat(amount) <= 0) {
+                document.getElementById('amountError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('amountError').classList.add('hidden');
+            }
+            
+            // Validate category
+            const selectedCategory = document.querySelector('.category-item.selected');
+            if (!selectedCategory) {
+                document.getElementById('categoryError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('categoryError').classList.add('hidden');
+            }
+            
+            if (isValid) {
+                // Simulate saving
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Saving...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('success-animation');
+                
+                setTimeout(() => {
+                    document.getElementById('successMessage').classList.remove('hidden');
+                }, 1000);
+            }
+        });
+
+        // Save and add another
+        document.getElementById('saveAndAddAnother').addEventListener('click', function() {
+            const form = document.getElementById('expenseForm');
+            const formData = new FormData(form);
+            
+            // Simulate saving
+            this.textContent = 'Saving...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                // Reset form
+                form.reset();
+                document.getElementById('date').valueAsDate = new Date();
+                document.querySelectorAll('.category-item').forEach(cat => cat.classList.remove('selected'));
+                document.getElementById('aiSuggestions').classList.add('hidden');
+                document.getElementById('receiptPreview').classList.add('hidden');
+                document.getElementById('charCount').textContent = '0/200';
+                
+                this.textContent = 'Save & Add Another';
+                this.disabled = false;
+                
+                // Show brief success indicator
+                this.classList.add('success-animation');
+                setTimeout(() => this.classList.remove('success-animation'), 600);
+            }, 1000);
+        });
+
+        // Success message actions
+        document.getElementById('goToDashboard').addEventListener('click', () => {
+            window.location.href = 'dashboard.html';
+        });
+
+        document.getElementById('addAnother').addEventListener('click', () => {
+            document.getElementById('successMessage').classList.add('hidden');
+            // Reset form
+            document.getElementById('expenseForm').reset();
+            document.getElementById('date').valueAsDate = new Date();
+            document.querySelectorAll('.category-item').forEach(cat => cat.classList.remove('selected'));
+            document.getElementById('aiSuggestions').classList.add('hidden');
+            document.getElementById('receiptPreview').classList.add('hidden');
+            document.getElementById('charCount').textContent = '0/200';
+            
+            // Re-enable submit button
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Save Expense';
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('success-animation');
+        });
+
+        // Amount input formatting
+        document.getElementById('amount').addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value > 0) {
+                // Trigger AI suggestions based on amount
+                setTimeout(() => {
+                    if (value > 100) {
+                        showAmountBasedSuggestions('high');
+                    } else if (value > 20) {
+                        showAmountBasedSuggestions('medium');
+                    } else {
+                        showAmountBasedSuggestions('low');
+                    }
+                }, 500);
+            }
+        });
+
+        function showAmountBasedSuggestions(range) {
+            const suggestions = {
+                high: ['Rent', 'Mortgage', 'Car Payment', 'Insurance'],
+                medium: ['Groceries', 'Gas', 'Utilities', 'Dining Out'],
+                low: ['Coffee', 'Snacks', 'Parking', 'Tips']
+            };
+
+            const suggestionChips = document.getElementById('suggestionChips');
+            const aiSuggestions = document.getElementById('aiSuggestions');
+            
+            if (suggestions[range] && !document.querySelector('.category-item.selected')) {
+                suggestionChips.innerHTML = '';
+                suggestions[range].forEach(suggestion => {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'ai-suggestion px-3 py-1 rounded-full text-sm border border-accent/30 text-accent hover:bg-accent/10 transition-colors';
+                    chip.textContent = suggestion;
+                    chip.addEventListener('click', () => {
+                        document.getElementById('merchant').value = suggestion;
+                    });
+                    suggestionChips.appendChild(chip);
+                });
+                aiSuggestions.classList.remove('hidden');
+            }
+        }
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

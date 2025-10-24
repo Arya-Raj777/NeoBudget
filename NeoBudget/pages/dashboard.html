@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NeoBudget</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00FFFF;
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+            box-shadow: 0 0 6px #00FFFF;
+        }
+        
+        .particle:nth-child(2) {
+            background: #FF0080;
+            box-shadow: 0 0 6px #FF0080;
+            animation-delay: -2s;
+            animation-duration: 10s;
+        }
+        
+        .particle:nth-child(3) {
+            background: #39FF14;
+            box-shadow: 0 0 6px #39FF14;
+            animation-delay: -4s;
+            animation-duration: 12s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .glow-input:focus {
+            box-shadow: 0 0 0 2px #00FFFF, 0 0 20px rgba(0, 255, 255, 0.3);
+            border-color: #00FFFF;
+        }
+        
+        .dashboard-card {
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.8);
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+            }
+            to {
+                box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+            }
+        }
+        
+        .notification-slide {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .counter-animation {
+            animation: countUp 1s ease-out;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+            transform-origin: 50% 50%;
+        }
+    </style>
+  
+  <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fneobudget6090back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.9"></script>
+  <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="bg-background min-h-screen relative overflow-x-hidden">
+    <!-- Floating Particles Background -->
+    <div class="floating-particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: -1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: -2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: -3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: -5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: -6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: -7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: -8s;"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="relative z-20 bg-surface/90 backdrop-blur-md border-b border-primary/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-surface border border-primary/30 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-orbitron font-bold text-primary text-shadow-glow-primary">NeoBudget</h1>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="dashboard.html" class="text-primary font-medium border-b-2 border-primary pb-1">Dashboard</a>
+                    <a href="add_expense.html" class="text-text-secondary hover:text-primary transition-colors">Add Expense</a>
+                    <a href="budget_planner.html" class="text-text-secondary hover:text-primary transition-colors">Budget Planner</a>
+                    <a href="financial_insights.html" class="text-text-secondary hover:text-primary transition-colors">Insights</a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-lg bg-surface hover:bg-surface-light transition-colors">
+                        <svg class="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-12h5v12z"/>
+                        </svg>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-orbitron font-bold text-white mb-2">Welcome back, Alex!</h2>
+            <p class="text-text-secondary">Here's your financial overview for October 2025</p>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Current Month Spending -->
+            <div class="dashboard-card rounded-2xl border border-primary/20 p-6 shadow-glow-primary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-text-muted">This Month</span>
+                </div>
+                <div class="counter-animation">
+                    <div class="text-2xl font-orbitron font-bold text-white mb-1">$2,847</div>
+                    <div class="text-sm text-accent">+12% from last month</div>
+                </div>
+            </div>
+
+            <!-- Budget Remaining -->
+            <div class="dashboard-card rounded-2xl border border-secondary/20 p-6 shadow-glow-secondary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-text-muted">Remaining</span>
+                </div>
+                <div class="counter-animation">
+                    <div class="text-2xl font-orbitron font-bold text-white mb-1">$1,153</div>
+                    <div class="text-sm text-secondary">28% of budget left</div>
+                </div>
+            </div>
+
+            <!-- Savings Progress -->
+            <div class="dashboard-card rounded-2xl border border-accent/20 p-6 shadow-glow-accent">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-text-muted">Savings</span>
+                </div>
+                <div class="counter-animation">
+                    <div class="text-2xl font-orbitron font-bold text-white mb-1">$892</div>
+                    <div class="text-sm text-accent">Goal: $1,200</div>
+                </div>
+                <div class="mt-3">
+                    <div class="w-full bg-surface-light rounded-full h-2">
+                        <div class="bg-gradient-to-r from-accent to-primary h-2 rounded-full progress-glow" style="width: 74%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Score -->
+            <div class="dashboard-card rounded-2xl border border-warning/20 p-6 shadow-glow-warning">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-text-muted">AI Score</span>
+                </div>
+                <div class="counter-animation">
+                    <div class="text-2xl font-orbitron font-bold text-white mb-1">8.7/10</div>
+                    <div class="text-sm text-warning">Excellent financial health</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Charts -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Spending Overview Chart -->
+                <div class="dashboard-card rounded-2xl border border-primary/20 p-6 shadow-glow-primary">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Spending Overview</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 text-sm bg-primary/20 text-primary rounded-lg">Month</button>
+                            <button class="px-3 py-1 text-sm text-text-muted hover:text-primary transition-colors">Week</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="spendingChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Income vs Expenses Trend -->
+                <div class="dashboard-card rounded-2xl border border-secondary/20 p-6 shadow-glow-secondary">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white">Income vs Expenses</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
+                                <span class="text-sm text-text-secondary">Income</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                                <span class="text-sm text-text-secondary">Expenses</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - AI Insights & Quick Actions -->
+            <div class="space-y-8">
+                <!-- Quick Expense Input -->
+                <div class="dashboard-card rounded-2xl border border-accent/20 p-6 shadow-glow-accent">
+                    <h3 class="text-lg font-orbitron font-bold text-white mb-4">Quick Add Expense</h3>
+                    <form id="quickExpenseForm" class="space-y-4">
+                        <div>
+                            <input 
+                                type="number" 
+                                placeholder="Amount ($)"
+                                class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-0 transition-all duration-300"
+                            >
+                        </div>
+                        <div>
+                            <select class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:ring-0 transition-all duration-300">
+                                <option value="">Select Category</option>
+                                <option value="food">Food & Dining</option>
+                                <option value="transport">Transportation</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="utilities">Utilities</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input 
+                                type="text" 
+                                placeholder="Description (optional)"
+                                class="glow-input w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-text-muted focus:outline-none focus:ring-0 transition-all duration-300"
+                            >
+                        </div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-accent hover:bg-accent/90 text-background font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-glow-accent pulse-glow"
+                        >
+                            Add Expense
+                        </button>
+                    </form>
+                </div>
+
+                <!-- AI Budget Recommendations -->
+                <div class="dashboard-card rounded-2xl border border-primary/20 p-6 shadow-glow-primary">
+                    <h3 class="text-lg font-orbitron font-bold text-white mb-4">AI Budget Planner</h3>
+                    <div class="space-y-4">
+                        <!-- Essentials -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12">
+                                    <svg class="progress-ring w-12 h-12">
+                                        <circle class="text-surface-light" stroke-width="4" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                        <circle class="progress-ring-circle text-primary" stroke-width="4" stroke-dasharray="75 25" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">Essentials</div>
+                                    <div class="text-xs text-text-muted">$2,100 / $2,800</div>
+                                </div>
+                            </div>
+                            <div class="text-primary font-bold">75%</div>
+                        </div>
+
+                        <!-- Entertainment -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12">
+                                    <svg class="progress-ring w-12 h-12">
+                                        <circle class="text-surface-light" stroke-width="4" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                        <circle class="progress-ring-circle text-secondary" stroke-width="4" stroke-dasharray="45 55" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">Entertainment</div>
+                                    <div class="text-xs text-text-muted">$270 / $600</div>
+                                </div>
+                            </div>
+                            <div class="text-secondary font-bold">45%</div>
+                        </div>
+
+                        <!-- Savings -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12">
+                                    <svg class="progress-ring w-12 h-12">
+                                        <circle class="text-surface-light" stroke-width="4" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                        <circle class="progress-ring-circle text-accent" stroke-width="4" stroke-dasharray="74 26" stroke="currentColor" fill="transparent" r="16" cx="24" cy="24"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">Savings</div>
+                                    <div class="text-xs text-text-muted">$892 / $1,200</div>
+                                </div>
+                            </div>
+                            <div class="text-accent font-bold">74%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="dashboard-card rounded-2xl border border-warning/20 p-6 shadow-glow-warning">
+                    <h3 class="text-lg font-orbitron font-bold text-white mb-4">AI Insights</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-accent/10 border border-accent/30 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white mb-1">Great Progress!</div>
+                                    <div class="text-xs text-text-secondary">You're 26% ahead of your savings goal this month. Consider investing the extra $200.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-warning/10 border border-warning/30 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white mb-1">Spending Alert</div>
+                                    <div class="text-xs text-text-secondary">Your dining expenses are 40% higher than usual. Consider meal planning to save $150/month.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spending Alerts -->
+                <div id="spendingAlerts" class="space-y-3">
+                    <!-- Dynamic alerts will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="mt-8">
+            <div class="dashboard-card rounded-2xl border border-primary/20 p-6 shadow-glow-primary">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-orbitron font-bold text-white">Recent Transactions</h3>
+                    <a href="add_expense.html" class="text-primary hover:text-primary/80 text-sm font-medium transition-colors">View All</a>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-surface/50 rounded-lg border border-surface-light">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">Starbucks Coffee</div>
+                                <div class="text-xs text-text-muted">Food & Dining • Today 2:30 PM</div>
+                            </div>
+                        </div>
+                        <div class="text-secondary font-bold">-$5.75</div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-surface/50 rounded-lg border border-surface-light">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">Netflix Subscription</div>
+                                <div class="text-xs text-text-muted">Entertainment • Yesterday</div>
+                            </div>
+                        </div>
+                        <div class="text-secondary font-bold">-$15.99</div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-surface/50 rounded-lg border border-surface-light">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">Salary Deposit</div>
+                                <div class="text-xs text-text-muted">Income • Oct 1, 2025</div>
+                            </div>
+                        </div>
+                        <div class="text-accent font-bold">+$4,200</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Spending Overview Pie Chart
+            const spendingCtx = document.getElementById('spendingChart').getContext('2d');
+            new Chart(spendingCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Food & Dining', 'Transportation', 'Entertainment', 'Shopping', 'Utilities', 'Others'],
+                    datasets: [{
+                        data: [850, 420, 270, 380, 650, 277],
+                        backgroundColor: [
+                            '#FF0080',
+                            '#00FFFF', 
+                            '#39FF14',
+                            '#FFD700',
+                            '#FF073A',
+                            '#B3B3B3'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#1A1A1A'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#FFFFFF',
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    elements: {
+                        arc: {
+                            borderWidth: 2
+                        }
+                    }
+                }
+            });
+
+            // Income vs Expenses Trend Chart
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Income',
+                        data: [1050, 1050, 1050, 1050],
+                        borderColor: '#39FF14',
+                        backgroundColor: 'rgba(57, 255, 20, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Expenses',
+                        data: [680, 720, 850, 597],
+                        borderColor: '#FF0080',
+                        backgroundColor: 'rgba(255, 0, 128, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#2A2A2A'
+                            },
+                            ticks: {
+                                color: '#B3B3B3'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#2A2A2A'
+                            },
+                            ticks: {
+                                color: '#B3B3B3',
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Quick expense form submission
+            document.getElementById('quickExpenseForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show success notification
+                showNotification('Expense added successfully!', 'success');
+                
+                // Reset form
+                this.reset();
+            });
+
+            // Simulate spending alerts
+            setTimeout(() => {
+                showSpendingAlert('You\'ve exceeded your dining budget by $50 this week.', 'warning');
+            }, 3000);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification-slide fixed top-4 right-4 z-50 p-4 rounded-lg border max-w-sm ${
+                type === 'success' ? 'bg-accent/10 border-accent/30 text-accent' :
+                type === 'warning' ? 'bg-warning/10 border-warning/30 text-warning' :
+                type === 'error' ? 'bg-error/10 border-error/30 text-error' :
+                'bg-primary/10 border-primary/30 text-primary'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-6 h-6 rounded-full bg-current/20 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-sm font-medium">${message}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-current/60 hover:text-current">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Spending alert system
+        function showSpendingAlert(message, type = 'warning') {
+            const alertsContainer = document.getElementById('spendingAlerts');
+            const alert = document.createElement('div');
+            alert.className = `notification-slide p-4 rounded-lg border ${
+                type === 'warning' ? 'bg-warning/10 border-warning/30' :
+                type === 'error' ? 'bg-error/10 border-error/30' :
+                'bg-primary/10 border-primary/30'
+            }`;
+            
+            alert.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-full ${
+                        type === 'warning' ? 'bg-warning/20' :
+                        type === 'error' ? 'bg-error/20' :
+                        'bg-primary/20'
+                    } flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 ${
+                            type === 'warning' ? 'text-warning' :
+                            type === 'error' ? 'text-error' :
+                            'text-primary'
+                        }" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-white mb-1">Spending Alert</div>
+                        <div class="text-xs text-text-secondary">${message}</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-text-muted hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            alertsContainer.appendChild(alert);
+        }
+
+        // Mobile menu toggle (if needed)
+        function toggleMobileMenu() {
+            // Implementation for mobile menu toggle
+        }
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>
